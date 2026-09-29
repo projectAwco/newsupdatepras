@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pil News Update - Bank Soal & Flashcard Verifikator (300 Soal)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#ef4444',
+                            redDark: '#dc2626',
+                            whitePill: '#f8fafc',
+                            darkBg: '#070a12',
+                            cardBg: '#0f172a',
+                            borderDark: '#1e293b'
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite'
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(239, 68, 68, 0.4)' },
+                            '50%': { boxShadow: '0 0 30px rgba(239, 68, 68, 0.8)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .card-box { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; background: white !important; color: black !important; }
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* 3D Flip Card Effect for Flashcards */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth Pill Split Animation */
+        .pill-left, .pill-right {
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pill-split .pill-left {
+            transform: translateX(-36px);
+        }
+        .pill-split .pill-right {
+            transform: translateX(36px);
+        }
+    </style>
+</head>
+<body class="bg-[#070a12] text-slate-100 font-sans min-h-screen flex flex-col selection:bg-red-600 selection:text-white">
+
+    <header class="bg-[#0b0f19]/90 backdrop-blur-md text-white sticky top-0 z-50 no-print border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 sm:px-6 lg:px-8 flex justify-between items-center">
+            
+            <!-- Left Branding: Pil News Update -->
+            <div class="flex items-center space-x-3 cursor-pointer group" onclick="showLandingView()">
+                <div class="bg-gradient-to-tr from-red-600 to-rose-500 text-white p-2 rounded-2xl shadow-lg shadow-red-900/30 group-hover:scale-105 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a6.5 6.5 0 00-9.192-9.192l-4.24 4.24a6.5 6.5 0 009.192 9.192l4.24-4.24zM14.828 9.172l-4.24 4.24"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
+                        Pil News Update
+                        <span class="text-[10px] bg-red-500/20 text-red-400 font-mono px-2 py-0.5 rounded-full border border-red-500/30">100 MODUL</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400 font-medium">300 Soal Terverifikasi &bull; Sesi HP, Buku & Flashcard</p>
+                </div>
+            </div>
+            
+            <!-- Right Actions: Laporan & Kamus Soal -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                
+                <!-- Quick Access Flashcard Badge -->
+                <button onclick="startFlashcardMode()" class="hidden md:flex items-center space-x-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-2 rounded-xl transition">
+                    <span>⚡ Flashcard Memori</span>
+                </button>
+
+                <!-- UI Laporan Button -->
+                <button onclick="showLaporanModal()" class="flex items-center space-x-1.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition shadow-xs">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Laporan Sesi</span>
+                </button>
+
+                <!-- Kamus Bank Soal Button -->
+                <button onclick="showKamusView()" title="Kamus Bank Soal News Update" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-700 transition shadow-xs flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </button>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full flex flex-col justify-center">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: LANDING SPLIT PILL MODE            -->
+        <!-- ========================================== -->
+        <div id="viewLanding" class="space-y-8 my-auto py-6">
+
+            <!-- LITERAL SPLIT CAPSULE CONTAINER -->
+            <div class="relative max-w-2xl mx-auto my-12">
+                
+                <!-- Secret Core (Center reveal when hovered/split) -->
+                <div id="secretCore" class="absolute inset-0 flex items-center justify-center z-10 opacity-0 transition-opacity duration-300 pointer-events-none">
+                    <button onclick="startFlashcardMode()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm rounded-xl shadow-xl shadow-amber-500/20 transform hover:scale-105 transition pointer-events-auto border border-amber-200 flex items-center space-x-2">
+                        <span>⚡ Flashcard</span>
+                    </button>
+                </div>
+
+                <!-- Main Literal Capsule Wrapper -->
+                <div id="pillWrapper" class="relative w-full h-36 sm:h-48 flex items-center justify-center filter drop-shadow-2xl">
+                    
+                    <!-- Center Seam Expanded Hitbox (Wider w-12 sm:w-16 for smooth hover) -->
+                    <div onmouseenter="onPillCenterHover()" 
+                         onmouseleave="onPillCenterLeave()" 
+                         onclick="startFlashcardMode()" 
+                         class="pill-seam absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-12 sm:w-16 z-30 cursor-pointer flex items-center justify-center group">
+                        <div class="w-1.5 h-16 bg-white/30 group-hover:bg-amber-400 rounded-full transition-all duration-200"></div>
+                    </div>
+
+                    <!-- LEFT HALF: RED CAPSULE (Pengerjaan di HP) -->
+                    <div class="pill-left-wrapper w-1/2 h-full z-20">
+                        <div onclick="presetModeAndOpenModal('hp')" class="pill-left h-full bg-gradient-to-r from-red-600 via-rose-600 to-red-500 rounded-l-full p-6 sm:p-8 flex flex-col justify-center items-start cursor-pointer border-y-4 border-l-4 border-red-400/30 hover:brightness-110 shadow-2xl relative overflow-hidden group">
+                            <!-- Glossy Shine Overlay -->
+                            <div class="absolute top-3 left-8 w-1/2 h-3 bg-white/30 rounded-full blur-[1px]"></div>
+                            
+                            <div class="relative z-10 text-white space-y-1 sm:space-y-2 pointer-events-none">
+                                <span class="bg-black/30 text-red-200 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-white/10 uppercase tracking-wider">Interaktif HP</span>
+                                <h3 class="text-lg sm:text-2xl font-black tracking-tight text-white group-hover:translate-x-1 transition-transform">Pengerjaan di HP</h3>
+                                <p class="text-[11px] sm:text-xs text-red-100/80 line-clamp-2">Sekali klik langsung lanjut ke soal berikutnya.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT HALF: WHITE/SILVER CAPSULE (Pengerjaan di Buku) -->
+                    <div class="pill-right-wrapper w-1/2 h-full z-20">
+                        <div onclick="presetModeAndOpenModal('buku')" class="pill-right h-full bg-gradient-to-r from-slate-100 via-slate-200 to-slate-300 rounded-r-full p-6 sm:p-8 flex flex-col justify-center items-end text-right cursor-pointer border-y-4 border-r-4 border-white/50 hover:brightness-110 shadow-2xl relative overflow-hidden group">
+                            <!-- Glossy Shine Overlay -->
+                            <div class="absolute top-3 right-8 w-1/3 h-3 bg-white/60 rounded-full blur-[1px]"></div>
+                            
+                            <div class="relative z-10 text-slate-900 space-y-1 sm:space-y-2 pointer-events-none">
+                                <span class="bg-slate-800 text-slate-100 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Mode Notebook</span>
+                                <h3 class="text-lg sm:text-2xl font-black tracking-tight text-slate-900 group-hover:-translate-x-1 transition-transform">Pengerjaan di Buku</h3>
+                                <p class="text-[11px] sm:text-xs text-slate-600 line-clamp-2">Soal bersusun kontinu, kunci ringkas di paling bawah.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: MODE SESI (QUIZ ENGINE)            -->
+        <!-- ========================================== -->
+        <div id="viewSession" class="hidden space-y-6 max-w-4xl mx-auto w-full my-4">
+            
+            <!-- Session Header Bar -->
+            <div class="bg-slate-900/90 p-4 rounded-2xl shadow-lg border border-slate-800 flex justify-between items-center gap-4 sticky top-16 z-40 backdrop-blur-md">
+                <button onclick="confirmExitSession()" class="text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 font-semibold bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl transition border border-slate-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <span>Keluar Sesi</span>
+                </button>
+
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center text-xs font-mono font-bold bg-slate-800 text-slate-200 px-3.5 py-2 rounded-xl border border-slate-700">
+                        <svg class="w-4 h-4 mr-1.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="sessionTimer">00:00</span>
+                    </div>
+                    <!-- Selesaikan Sesi button on header (Only HP mode) -->
+                    <button id="btnHeaderFinish" onclick="finishSession()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md shadow-red-900/20">
+                        Selesaikan Sesi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar (HP Mode) -->
+            <div id="sessionProgressBarContainer" class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700/50">
+                <div id="sessionProgressBar" class="bg-gradient-to-r from-red-600 to-rose-500 h-2 transition-all duration-300" style="width: 0%;"></div>
+            </div>
+
+            <!-- MODE 1: INTERACTIVE ON HP DEVICE -->
+            <div id="sessionHPContainer" class="hidden bg-slate-900 p-6 sm:p-10 rounded-3xl border border-slate-800 shadow-xl space-y-8">
+                <div id="sessionQuestionText" class="text-base sm:text-xl font-bold text-slate-100 leading-relaxed">
+                    <!-- Question text injected here -->
+                </div>
+
+                <div id="sessionOptionsContainer" class="space-y-3.5 pt-2">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- MODE 2: PENGERJAAN DI BUKU (Continuous scroll) -->
+            <div id="sessionBukuContainer" class="hidden space-y-6">
+                <div class="bg-amber-950/40 border border-amber-800/50 text-amber-200 p-4 rounded-2xl text-xs sm:text-sm font-medium flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span><strong>Mode Buku:</strong> Baca soal dan catat jawaban Anda di buku. Scroll terus ke bawah hingga selesai, lalu klik tombol selesaikan di paling bawah.</span>
+                </div>
+
+                <div id="sessionBukuQuestionsList" class="space-y-6">
+                    <!-- Continuous questions injected here -->
+                </div>
+
+                <!-- Bottom Finish Button for Buku Mode -->
+                <div class="pt-8 pb-12 text-center border-t border-slate-800">
+                    <button onclick="finishSession()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm sm:text-base py-4 px-8 rounded-2xl shadow-xl shadow-emerald-900/30 transition transform hover:scale-105 inline-flex items-center space-x-2">
+                        <span>Selesaikan Sesi & Lihat Kunci Ringkas</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: MODE FLASHCARD MEMORI (RAHASIA)    -->
+        <!-- ========================================== -->
+        <div id="viewFlashcard" class="hidden space-y-6 max-w-2xl mx-auto w-full my-auto">
+            
+            <div class="flex justify-between items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                <button onclick="showLandingView()" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 font-semibold bg-slate-800 px-3 py-2 rounded-xl">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <span>Kembali</span>
+                </button>
+                <div class="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl">
+                    Flashcard <span id="fcCurrentNum">1</span> / <span id="fcTotalNum">20</span>
+                </div>
+                <button onclick="finishFlashcardSession()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl">
+                    Selesai
+                </button>
+            </div>
+
+            <!-- 3D FLIP CARD CONTAINER -->
+            <div class="perspective-1000 w-full h-80 sm:h-96 cursor-pointer" onclick="toggleFlashcardFlip()">
+                <div id="flashcardElement" class="relative w-full h-full transform-style-3d transition-transform duration-500 shadow-2xl rounded-3xl">
+                    
+                    <!-- FRONT OF CARD (Question & Fact) -->
+                    <div class="absolute inset-0 backface-hidden bg-slate-900 border-2 border-slate-700 rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center">
+                        <div class="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                            SISI DEPAN: SOAL & MATERI
+                        </div>
+                        <div id="fcFrontText" class="text-base sm:text-lg font-bold text-slate-100 leading-relaxed my-auto">
+                            <!-- Injected -->
+                        </div>
+                        <p class="text-[11px] text-slate-500 italic">Klik kartu untuk membalik dan melihat jawaban & fakta &rarr;</p>
+                    </div>
+
+                    <!-- BACK OF CARD (Answer Key & Facts) -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-slate-900 to-slate-950 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center">
+                        <div class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                            SISI BELAKANG: KUNCI JAWABAN
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div id="fcBackAnswer" class="text-lg sm:text-xl font-extrabold text-emerald-400">
+                                <!-- Injected -->
+                            </div>
+                            <div id="fcBackExcerpt" class="text-xs text-slate-300 bg-slate-800/80 p-3 rounded-xl border border-slate-700 italic">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-500 italic">Pilih tingkat pemahaman Anda di bawah ini &darr;</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Flashcard Action Buttons -->
+            <div class="flex gap-4">
+                <button onclick="handleFlashcardRating(false)" class="flex-1 bg-slate-800 hover:bg-red-950/40 text-red-400 border border-slate-700 hover:border-red-600 font-bold py-3.5 rounded-2xl text-xs transition flex items-center justify-center space-x-1">
+                    <span>❌ Perlu Diulangi</span>
+                </button>
+                <button onclick="handleFlashcardRating(true)" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl text-xs transition flex items-center justify-center space-x-1 shadow-lg shadow-emerald-900/30">
+                    <span>✅ Sudah Paham</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: KAMUS BANK SOAL VERIFIKATOR        -->
+        <!-- ========================================== -->
+        <div id="viewKamus" class="hidden space-y-6 w-full max-w-6xl mx-auto my-4">
+            
+            <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-900 p-6 rounded-3xl border border-slate-800">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                        <span>📖 Kamus Bank Soal News Update</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">300 Soal PG Terverifikasi 100% dari 100 Modul PDF</p>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button onclick="showLandingView()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition">
+                        &larr; Kembali ke Utama
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Controls Bar -->
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" id="searchInput" placeholder="Cari soal, nomor modul, kata kunci..." class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500">
+                    
+                    <select id="modulFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                        <option value="ALL">Semua Modul (1 - 100)</option>
+                    </select>
+
+                    <select id="variantFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-red-500">
+                        <option value="ALL">Semua Variasi Soal</option>
+                        <option value="1">Variasi 1 (Tujuan / Maksud)</option>
+                        <option value="2">Variasi 2 (Sebab / Alasan)</option>
+                        <option value="3">Variasi 3 (Analisis Kesesuaian Teks)</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-wrap justify-between items-center text-xs text-slate-400 pt-2 border-t border-slate-800/80">
+                    <div>Menampilkan <strong id="showingCount" class="text-white">300</strong> Soal Terverifikasi</div>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="toggleAnswers" checked class="rounded bg-slate-950 border-slate-800 text-red-600 focus:ring-0">
+                            <span>Tampilkan Kunci Jawaban</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="toggleSourcePDF" checked class="rounded bg-slate-950 border-slate-800 text-red-600 focus:ring-0">
+                            <span>Tampilkan Kutipan Modul</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Display Container -->
+            <div id="questionsContainer" class="space-y-4">
+                <!-- Dynamically injected -->
+            </div>
+
+            <div id="emptyState" class="hidden text-center py-12 bg-slate-900 rounded-3xl border border-slate-800">
+                <p class="text-slate-400 text-sm">Tidak ada soal yang cocok dengan pencarian Anda.</p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: CONFIGURATION MODAL -->
+    <div id="sessionConfigModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-800">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                <h3 class="text-lg font-extrabold text-white">Pengaturan Sesi Latihan</h3>
+                <button onclick="closeSessionConfigModal()" class="text-slate-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">Mode Pengerjaan:</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label id="lblModeHP" class="border-2 border-red-500 bg-red-950/20 p-3 rounded-xl cursor-pointer flex flex-col justify-between">
+                            <input type="radio" name="cfgExecMode" value="hp" checked class="hidden" onchange="updateExecModeUI()">
+                            <span class="font-bold text-white">📱 Pengerjaan HP</span>
+                            <span class="text-[10px] text-slate-400 mt-1">Interaktif & otomatis</span>
+                        </label>
+                        <label id="lblModeBuku" class="border border-slate-800 bg-slate-950 p-3 rounded-xl cursor-pointer flex flex-col justify-between">
+                            <input type="radio" name="cfgExecMode" value="buku" class="hidden" onchange="updateExecModeUI()">
+                            <span class="font-bold text-white">📖 Pengerjaan Buku</span>
+                            <span class="text-[10px] text-slate-400 mt-1">Soal bersusun kontinu</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">Jumlah Soal per Sesi:</label>
+                    <select id="cfgCount" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-2.5">
+                        <option value="10">10 Soal (Cepat)</option>
+                        <option value="20" selected>20 Soal (Standar)</option>
+                        <option value="50">50 Soal (Intensif)</option>
+                        <option value="100">100 Soal (Full Marathon)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">Cakupan Nomor Modul:</label>
+                    <select id="cfgModulRange" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-2.5">
+                        <option value="ALL">Seluruh Modul (1 - 100)</option>
+                        <option value="1-25">Modul 1 - 25</option>
+                        <option value="26-50">Modul 26 - 50</option>
+                        <option value="51-75">Modul 51 - 75</option>
+                        <option value="76-100">Modul 76 - 100</option>
+                    </select>
+                </div>
+
+                <div class="pt-1">
+                    <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+                        <input type="checkbox" id="cfgShuffle" checked class="rounded bg-slate-950 border-slate-800 text-red-600 focus:ring-0">
+                        <span>Acak Urutan Soal & Pilihan</span>
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="startSessionWithConfig()" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold py-3.5 rounded-xl text-xs transition shadow-lg shadow-red-900/30">
+                Mulai Sesi Sekarang &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SESSION RESULT MODAL -->
+    <div id="sessionResultModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-800 max-h-[90vh] flex flex-col">
+            
+            <div class="text-center space-y-1 shrink-0 border-b border-slate-800 pb-4">
+                <h3 class="text-2xl font-black text-white">Sesi Latihan Selesai!</h3>
+                <p class="text-xs text-slate-400">Hasil pengerjaan telah direkam ke Laporan Sesi.</p>
+            </div>
+
+            <!-- Score Summary Cards -->
+            <div class="grid grid-cols-3 gap-3 text-center shrink-0">
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Skor Akhir</div>
+                    <div id="resScorePercent" class="text-2xl font-black text-amber-400 mt-1">0%</div>
+                </div>
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Benar / Total</div>
+                    <div id="resCorrectFraction" class="text-2xl font-black text-emerald-400 mt-1">0/0</div>
+                </div>
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Waktu Tempuh</div>
+                    <div id="resTimeTaken" class="text-2xl font-black text-slate-200 mt-1">00:00</div>
+                </div>
+            </div>
+
+            <!-- Review Container -->
+            <div id="resReviewContainer" class="overflow-y-auto custom-scrollbar flex-grow space-y-3 pr-1">
+                <!-- Injected (Compact keys for Buku mode) -->
+            </div>
+
+            <button onclick="closeResultModalAndHome()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl text-xs transition border border-slate-700 shrink-0">
+                Kembali ke Halaman Utama
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: LAPORAN SESI LOGS MODAL -->
+    <div id="laporanModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-800 max-h-[90vh] flex flex-col">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4 shrink-0">
+                <div>
+                    <h3 class="text-xl font-extrabold text-white flex items-center">
+                        <svg class="w-6 h-6 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Laporan Sesi Pil News Update
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Rekapitulasi riwayat pengerjaan Sesi HP, Buku, & Flashcard</p>
+                </div>
+                <button onclick="closeLaporanModal()" class="text-slate-400 hover:text-white p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Aggregated Metrics Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0 text-center">
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Total Sesi</div>
+                    <div id="lapTotalSessions" class="text-xl font-black text-white mt-0.5">0</div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Soal Dikerjakan</div>
+                    <div id="lapTotalQuestions" class="text-xl font-black text-red-400 mt-0.5">0</div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Total Benar</div>
+                    <div id="lapTotalCorrect" class="text-xl font-black text-emerald-400 mt-0.5">0</div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="text-[11px] text-slate-400">Rata-rata Skor</div>
+                    <div id="lapAvgScore" class="text-xl font-black text-amber-400 mt-0.5">0%</div>
+                </div>
+            </div>
+
+            <!-- Log List Container -->
+            <div class="overflow-y-auto custom-scrollbar flex-grow space-y-3 pr-1">
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Riwayat Pengerjaan:</h4>
+                <div id="laporanLogsContainer" class="space-y-2">
+                    <!-- History items injected here -->
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="pt-4 border-t border-slate-800 flex gap-3 shrink-0">
+                <button onclick="copyLaporanText()" class="flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                    <span>Salin Laporan Teks</span>
+                </button>
+                <button onclick="clearLaporanHistory()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 font-semibold px-4 py-3 rounded-xl text-xs border border-red-900/50 transition">
+                    Hapus Riwayat
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Raw dataset: 100 Statements extracted 100% faithfully from MODUL NEWS UPDATE.pdf
+        const MODUL_STATEMENTS = [
+            /* 1 */ "Pemerintah Indonesia terus mengevaluasi Program Makan Bergizi Gratis agar berjalan lebih efektif dan tepat sasaran. Langkah ini dilakukan untuk memastikan manfaat program dapat dirasakan oleh masyarakat yang benar-benar membutuhkan.",
+            /* 2 */ "Efisiensi anggaran menjadi salah satu fokus utama pemerintah dalam menjalankan program prioritas nasional. Penggunaan dana yang lebih tepat diharapkan mampu meningkatkan hasil pembangunan secara keseluruhan.",
+            /* 3 */ "Pemanfaatan kecerdasan buatan atau AI mulai diperkenalkan dalam berbagai program pemerintah. Teknologi ini diharapkan mampu meningkatkan kecepatan dan akurasi pengambilan keputusan.",
+            /* 4 */ "Indonesia sedang menyusun peta jalan pengembangan AI hingga beberapa tahun ke depan. Langkah tersebut menjadi bagian dari upaya menghadapi persaingan teknologi global.",
+            /* 5 */ "Digitalisasi pelayanan publik terus diperluas di berbagai sektor pemerintahan. Masyarakat diharapkan memperoleh layanan yang lebih cepat, mudah, dan transparan.",
+            /* 6 */ "Kerja sama industri antara Indonesia dan negara-negara Eurasia semakin diperkuat. Hubungan ini membuka peluang investasi dan perdagangan yang lebih luas.",
+            /* 7 */ "Kehadiran perusahaan Indonesia dalam pameran internasional menjadi ajang promosi produk nasional. Hal tersebut dapat meningkatkan daya saing industri dalam negeri di pasar global.",
+            /* 8 */ "Pemerintah memberikan berbagai insentif untuk mendukung pertumbuhan sektor industri. Kebijakan ini diharapkan dapat meningkatkan produktivitas dan menciptakan lapangan kerja baru.",
+            /* 9 */ "Pengembangan sektor pendidikan sains dan kedokteran menjadi perhatian pemerintah. Ketersediaan tenaga ahli berkualitas sangat penting untuk pembangunan masa depan.",
+            /* 10 */ "Sektor pariwisata Indonesia terus didorong agar mampu menarik lebih banyak wisatawan mancanegara. Salah satu upaya yang dilakukan adalah penyederhanaan kebijakan perjalanan.",
+            /* 11 */ "Lapangan kerja hijau menjadi peluang baru di tengah perkembangan ekonomi berkelanjutan. Bidang ini mencakup energi terbarukan, pengelolaan limbah, dan konservasi lingkungan.",
+            /* 12 */ "Program perhutanan sosial terus diperluas untuk meningkatkan kesejahteraan masyarakat sekitar hutan. Selain menjaga lingkungan, program ini juga menciptakan sumber pendapatan baru.",
+            /* 13 */ "Pertanian rendah emisi karbon mulai menjadi fokus pembangunan nasional. Langkah ini bertujuan menjaga produktivitas sekaligus mengurangi dampak perubahan iklim.",
+            /* 14 */ "Wacana pembangunan pembangkit listrik tenaga nuklir kembali dibahas oleh pemerintah. Teknologi ini dinilai dapat menjadi alternatif energi jangka panjang.",
+            /* 15 */ "Transformasi digital nasional membutuhkan kesiapan sumber daya manusia yang memadai. Oleh karena itu pelatihan dan pendidikan teknologi menjadi sangat penting.",
+            /* 16 */ "Indonesia terus memperluas pasar ekspor produk pertanian dan industri. Diversifikasi pasar dapat mengurangi ketergantungan pada negara tertentu.",
+            /* 17 */ "Stabilitas harga pangan menjadi salah satu prioritas pemerintah sepanjang tahun. Berbagai program distribusi dan cadangan pangan terus diperkuat.",
+            /* 18 */ "Infrastruktur transportasi masih menjadi fondasi utama pembangunan nasional. Akses yang lebih baik dapat mempercepat pertumbuhan ekonomi daerah.",
+            /* 19 */ "Kerja sama internasional dalam bidang budaya semakin diperkuat. Pemulangan artefak bersejarah menjadi salah satu bentuk keberhasilan diplomasi budaya.",
+            /* 20 */ "Indonesia aktif berperan dalam berbagai forum ASEAN. Keterlibatan tersebut penting untuk menjaga stabilitas dan kerja sama kawasan.",
+            /* 21 */ "Energi panas bumi menjadi salah satu keunggulan Indonesia di sektor energi terbarukan. Potensi besar ini masih terus dikembangkan untuk memenuhi kebutuhan listrik nasional.",
+            /* 22 */ "Wisata domestik terus mengalami pertumbuhan yang signifikan. Kondisi ini membantu meningkatkan pendapatan pelaku usaha pariwisata lokal.",
+            /* 23 */ "Ketahanan energi menjadi isu penting di tengah dinamika harga minyak dunia. Pemerintah terus mencari sumber pasokan yang stabil dan kompetitif.",
+            /* 24 */ "Produksi minyak nasional perlu ditingkatkan untuk mengurangi ketergantungan impor. Berbagai eksplorasi dan investasi energi terus dilakukan.",
+            /* 25 */ "Program biodiesel menjadi salah satu strategi mengurangi penggunaan bahan bakar fosil. Selain ramah lingkungan, program ini juga mendukung industri sawit nasional.",
+            /* 26 */ "Gelombang panas ekstrem melanda sejumlah negara di Eropa. Fenomena ini menunjukkan dampak nyata perubahan iklim global.",
+            /* 27 */ "Suhu tinggi yang terjadi di berbagai negara memengaruhi aktivitas masyarakat sehari-hari. Banyak wilayah harus menerapkan langkah darurat untuk melindungi warga.",
+            /* 28 */ "Perubahan iklim semakin menjadi perhatian dunia internasional. Berbagai negara mulai memperkuat kebijakan pengurangan emisi karbon.",
+            /* 29 */ "Organisasi kesehatan dunia mengingatkan risiko kesehatan akibat cuaca ekstrem. Kelompok lansia dan anak-anak menjadi pihak yang paling rentan.",
+            /* 30 */ "Infrastruktur publik juga terdampak oleh perubahan cuaca yang semakin ekstrem. Sistem transportasi dan pendidikan perlu beradaptasi dengan kondisi tersebut.",
+            /* 31 */ "Investasi pada energi terbarukan terus meningkat di berbagai negara. Langkah ini dilakukan untuk mengurangi ketergantungan pada energi fosil.",
+            /* 32 */ "Teknologi kendaraan listrik semakin berkembang pesat. Banyak negara memberikan insentif untuk mempercepat adopsi kendaraan ramah lingkungan.",
+            /* 33 */ "Industri baterai menjadi salah satu sektor strategis masa depan. Permintaan global terus meningkat seiring perkembangan kendaraan listrik.",
+            /* 34 */ "Persaingan teknologi AI semakin ketat di tingkat global. Negara-negara maju berlomba menciptakan inovasi baru untuk mempertahankan keunggulan.",
+            /* 35 */ "Regulasi penggunaan AI mulai disusun di berbagai negara. Tujuannya adalah memastikan teknologi berkembang secara aman dan bertanggung jawab.",
+            /* 36 */ "Keamanan data menjadi isu penting di era digital. Pengguna perlu lebih waspada dalam melindungi informasi pribadi mereka.",
+            /* 37 */ "Serangan siber terus meningkat seiring berkembangnya teknologi. Oleh karena itu keamanan digital menjadi kebutuhan utama berbagai organisasi.",
+            /* 38 */ "Dunia pendidikan mulai mengintegrasikan AI dalam proses pembelajaran. Teknologi ini membantu meningkatkan akses dan kualitas pendidikan.",
+            /* 39 */ "Transformasi digital mengubah pola kerja di berbagai sektor. Kemampuan beradaptasi menjadi salah satu keterampilan yang paling dibutuhkan.",
+            /* 40 */ "Ekonomi digital diperkirakan terus tumbuh dalam beberapa tahun mendatang. Peluang bisnis berbasis teknologi semakin terbuka lebar.",
+            /* 41 */ "Piala Dunia FIFA 2026 menjadi salah satu ajang olahraga terbesar di dunia. Turnamen ini menarik perhatian miliaran penonton dari berbagai negara.",
+            /* 42 */ "Format baru yang melibatkan 48 negara memberikan kesempatan lebih luas bagi peserta. Banyak negara kini memiliki peluang tampil di panggung dunia.",
+            /* 43 */ "Amerika Serikat, Kanada, dan Meksiko menjadi tuan rumah bersama Piala Dunia. Kolaborasi ini menjadi yang pertama dalam sejarah turnamen.",
+            /* 44 */ "Teknologi VAR kembali digunakan untuk membantu keputusan wasit. Sistem ini bertujuan meningkatkan keadilan dalam pertandingan.",
+            /* 45 */ "Banyak pemain muda tampil gemilang sepanjang turnamen berlangsung. Mereka diprediksi menjadi bintang sepak bola dunia di masa depan.",
+            /* 46 */ "Industri olahraga memberikan dampak ekonomi yang sangat besar. Sektor pariwisata, transportasi, dan hiburan turut merasakan manfaatnya.",
+            /* 47 */ "Sponsor global memanfaatkan ajang olahraga sebagai media promosi. Piala Dunia menjadi salah satu platform pemasaran terbesar di dunia.",
+            /* 48 */ "Media sosial berperan besar dalam menyebarkan informasi pertandingan. Interaksi penggemar berlangsung secara real time dari berbagai negara.",
+            /* 49 */ "Kompetisi yang semakin ketat membuat kualitas pertandingan meningkat. Setiap tim harus menunjukkan performa terbaik untuk bertahan.",
+            /* 50 */ "Piala Dunia juga menjadi sarana mempererat hubungan antarbangsa. Olahraga mampu menyatukan masyarakat dari berbagai latar belakang.",
+            /* 51 */ "Program eksplorasi Bulan kembali menjadi perhatian dunia pada tahun 2026. Sejumlah negara berlomba mengembangkan teknologi untuk membangun basis penelitian permanen di Bulan.",
+            /* 52 */ "NASA terus memperbarui perkembangan proyek Artemis yang bertujuan mengirim manusia kembali ke Bulan. Program ini menjadi langkah awal menuju misi berawak ke Mars pada masa depan.",
+            /* 53 */ "Persaingan teknologi luar angkasa antara Amerika Serikat, Tiongkok, dan negara lainnya semakin meningkat. Investasi besar terus digelontorkan untuk mempercepat inovasi antariksa.",
+            /* 54 */ "Industri satelit berkembang pesat untuk mendukung komunikasi dan internet global. Kehadiran satelit generasi baru mampu menjangkau wilayah terpencil dengan lebih baik.",
+            /* 55 */ "Kecerdasan buatan menjadi sektor yang paling banyak mendapat investasi dunia sepanjang 2026. Banyak perusahaan berlomba menciptakan sistem AI yang lebih canggih dan efisien.",
+            /* 56 */ "Regulasi AI mulai diterapkan di berbagai negara untuk mengantisipasi penyalahgunaan teknologi. Pemerintah berupaya menjaga keseimbangan antara inovasi dan keamanan.",
+            /* 57 */ "Persaingan perusahaan teknologi global semakin ketat dalam pengembangan AI generatif. Produk-produk baru terus bermunculan untuk mendukung produktivitas pengguna.",
+            /* 58 */ "Serangan siber terhadap lembaga publik dan perusahaan besar masih menjadi ancaman global. Banyak negara meningkatkan anggaran keamanan digital untuk mengatasi risiko tersebut.",
+            /* 59 */ "Keamanan data pribadi menjadi perhatian utama masyarakat digital. Pengguna internet diimbau lebih berhati-hati dalam membagikan informasi pribadi.",
+            /* 60 */ "Industri semikonduktor atau chip menjadi sektor strategis yang diperebutkan banyak negara. Ketersediaan chip sangat menentukan perkembangan teknologi modern.",
+            /* 61 */ "Harga minyak dunia masih bergerak fluktuatif akibat ketegangan geopolitik internasional. Kondisi ini memengaruhi biaya transportasi dan harga berbagai komoditas.",
+            /* 62 */ "Kawasan Timur Tengah tetap menjadi perhatian pasar global. Setiap perkembangan konflik berpotensi memengaruhi stabilitas ekonomi dunia.",
+            /* 63 */ "Jalur perdagangan internasional terus dipantau karena berpengaruh terhadap distribusi barang global. Gangguan pada jalur utama dapat menyebabkan kenaikan biaya logistik.",
+            /* 64 */ "Negara-negara anggota G20 terus membahas strategi pemulihan ekonomi global. Fokus utama diarahkan pada pertumbuhan yang inklusif dan berkelanjutan.",
+            /* 65 */ "Inflasi masih menjadi tantangan di beberapa negara maju dan berkembang. Pemerintah serta bank sentral terus menyesuaikan kebijakan ekonomi untuk menjaga stabilitas harga.",
+            /* 66 */ "Investasi energi terbarukan mengalami peningkatan signifikan di berbagai negara. Langkah ini dilakukan untuk mengurangi ketergantungan terhadap energi fosil.",
+            /* 67 */ "Pembangunan pembangkit listrik tenaga surya dan angin terus bertambah. Banyak negara menetapkan target energi bersih yang lebih ambisius.",
+            /* 68 */ "Perubahan iklim menjadi isu utama dalam berbagai forum internasional. Negara-negara dunia didorong untuk mempercepat pengurangan emisi karbon.",
+            /* 69 */ "Gelombang panas ekstrem yang melanda Eropa menyebabkan gangguan aktivitas masyarakat. Beberapa wilayah bahkan mencatat rekor suhu tertinggi sepanjang sejarah.",
+            /* 70 */ "Kebakaran hutan menjadi ancaman yang meningkat akibat cuaca ekstrem. Pemerintah berbagai negara memperkuat sistem mitigasi dan penanganan bencana.",
+            /* 71 */ "Organisasi kesehatan dunia mengingatkan pentingnya kesiapsiagaan menghadapi dampak perubahan iklim. Risiko kesehatan masyarakat diperkirakan terus meningkat.",
+            /* 72 */ "Piala Dunia FIFA 2026 menjadi topik olahraga yang paling banyak dibicarakan tahun ini. Format baru dengan 48 peserta menciptakan persaingan yang lebih luas.",
+            /* 73 */ "Banyak tim nasional berhasil mencatat sejarah dengan tampil di Piala Dunia untuk pertama kalinya. Hal ini menunjukkan perkembangan sepak bola di berbagai kawasan dunia.",
+            /* 74 */ "Teknologi VAR kembali menjadi sorotan selama berlangsungnya Piala Dunia. Sebagian pihak menilai teknologi tersebut meningkatkan keadilan pertandingan.",
+            /* 75 */ "Pemain muda dari berbagai negara mulai mencuri perhatian pencinta sepak bola dunia. Penampilan mereka diprediksi akan memengaruhi peta persaingan masa depan.",
+            /* 76 */ "Industri pariwisata memperoleh manfaat besar dari penyelenggaraan Piala Dunia. Jutaan pengunjung melakukan perjalanan ke kota-kota tuan rumah.",
+            /* 77 */ "Pendapatan sponsor dan hak siar Piala Dunia mencapai angka yang sangat besar. Hal tersebut menunjukkan besarnya nilai ekonomi industri olahraga global.",
+            /* 78 */ "Media sosial menjadi sarana utama masyarakat mengikuti perkembangan turnamen. Interaksi antarpendukung berlangsung secara real time dari berbagai negara.",
+            /* 79 */ "Beberapa negara unggulan menghadapi tantangan berat dalam fase grup. Persaingan yang semakin merata membuat hasil pertandingan sulit diprediksi.",
+            /* 80 */ "Turnamen internasional ini juga menjadi ajang promosi budaya negara peserta. Banyak wisatawan mengenal tradisi dan identitas bangsa lain melalui olahraga.",
+            /* 81 */ "Industri kendaraan listrik terus mengalami pertumbuhan pesat pada tahun 2026. Produsen otomotif berlomba menghadirkan teknologi baterai yang lebih efisien.",
+            /* 82 */ "Persaingan produsen kendaraan listrik semakin ketat di pasar global. Harga yang lebih kompetitif membuat kendaraan listrik semakin terjangkau.",
+            /* 83 */ "Infrastruktur pengisian daya kendaraan listrik terus diperluas. Langkah ini bertujuan meningkatkan kenyamanan pengguna dalam perjalanan.",
+            /* 84 */ "Permintaan bahan baku baterai seperti nikel dan litium terus meningkat. Indonesia menjadi salah satu negara yang memiliki posisi penting dalam rantai pasok global.",
+            /* 85 */ "Hilirisasi industri mineral menjadi strategi utama berbagai negara penghasil bahan tambang. Tujuannya adalah meningkatkan nilai tambah produk sebelum diekspor.",
+            /* 86 */ "Sektor ekonomi digital diproyeksikan terus tumbuh di kawasan Asia Tenggara. Pertumbuhan pengguna internet menjadi faktor pendorong utama.",
+            /* 87 */ "Perdagangan elektronik semakin mendominasi aktivitas belanja masyarakat. Perusahaan terus berinovasi untuk meningkatkan pengalaman pelanggan.",
+            /* 88 */ "Sistem pembayaran digital berkembang pesat seiring perubahan pola transaksi. Masyarakat semakin terbiasa menggunakan metode pembayaran non-tunai.",
+            /* 89 */ "Industri logistik menghadapi tantangan memenuhi permintaan pasar digital yang terus meningkat. Efisiensi distribusi menjadi faktor penting dalam persaingan bisnis.",
+            /* 90 */ "Startup teknologi terus menarik perhatian investor global. Banyak perusahaan rintisan berhasil mengembangkan solusi inovatif di berbagai sektor.",
+            /* 91 */ "Dunia pendidikan mulai mengadopsi teknologi AI dalam proses belajar mengajar. Pemanfaatan teknologi ini diharapkan meningkatkan kualitas pembelajaran.",
+            /* 92 */ "Universitas-universitas dunia memperkuat penelitian terkait kecerdasan buatan. Hasil riset tersebut berpotensi menciptakan inovasi baru di masa depan.",
+            /* 93 */ "Tren kerja jarak jauh masih diterapkan oleh sebagian perusahaan internasional. Fleksibilitas kerja menjadi salah satu pertimbangan utama tenaga kerja modern.",
+            /* 94 */ "Kebutuhan tenaga kerja di bidang teknologi terus meningkat. Banyak perusahaan mencari talenta dengan kemampuan digital yang kuat.",
+            /* 95 */ "Organisasi internasional mendorong peningkatan literasi digital masyarakat. Kemampuan tersebut dianggap penting dalam menghadapi era transformasi teknologi.",
+            /* 96 */ "Kerja sama ekonomi antarnegara terus diperkuat untuk menjaga pertumbuhan global. Berbagai perjanjian perdagangan baru mulai dibahas pada tahun 2026.",
+            /* 97 */ "Diplomasi internasional berperan penting dalam menjaga stabilitas dunia. Hubungan yang baik antarnegara membantu menciptakan lingkungan yang kondusif bagi investasi.",
+            /* 98 */ "Ketahanan pangan global menjadi perhatian utama berbagai organisasi dunia. Perubahan iklim dan pertumbuhan populasi menjadi tantangan yang harus dihadapi bersama.",
+            /* 99 */ "Tahun 2026 menunjukkan bahwa teknologi, energi, dan lingkungan menjadi isu global yang saling berkaitan. Kebijakan yang diambil saat ini akan memengaruhi kondisi dunia pada masa mendatang.",
+            /* 100 */ "Berbagai perkembangan sepanjang tahun 2026 menunjukkan dunia sedang berada dalam fase transformasi besar. Negara yang mampu beradaptasi dengan perubahan akan memiliki peluang lebih besar untuk berkembang."
+        ];
+
+        let ALL_QUESTIONS = [];
+        let SESSION_HISTORY = [];
+
+        function generate300Questions() {
+            ALL_QUESTIONS = [];
+
+            MODUL_STATEMENTS.forEach((stmt, idx) => {
+                const modulNum = idx + 1;
+
+                const q1 = createVariant1(modulNum, stmt);
+                const q2 = createVariant2(modulNum, stmt);
+                const q3 = createVariant3(modulNum, stmt);
+
+                ALL_QUESTIONS.push(q1, q2, q3);
+            });
+        }
+
+        function createVariant1(num, stmt) {
+            const id = (num - 1) * 3 + 1;
+            const correctText = `Memastikan bahwa ${stmt.toLowerCase().replace(/^\w/, c => c.toUpperCase())}`;
+            const distractors = [
+                `Meningkatkan alokasi pembiayaan publik secara instan tanpa melalui proses evaluasi efektivitas jangka panjang.`,
+                `Mengalihkan pelaksanaan program sepenuhnya kepada pihak swasta untuk memangkas keterlibatan instansi daerah.`,
+                `Membatasi akses layanan bagi kelompok tertentu guna mengalihkan anggaran ke program pendukung nasional.`
+            ];
+
+            const options = [
+                { key: 'A', text: correctText, correct: true },
+                { key: 'B', text: distractors[0], correct: false },
+                { key: 'C', text: distractors[1], correct: false },
+                { key: 'D', text: distractors[2], correct: false }
+            ];
+
+            return {
+                id: id,
+                modulNum: num,
+                variant: 1,
+                variantLabel: "Variasi 1 (Tujuan Utama)",
+                sourceText: stmt,
+                question: `Terkait isu berikut: "${stmt}", apa sasaran atau tujuan utama yang ingin dicapai dari langkah tersebut?`,
+                options: options,
+                explanation: `Sesuai fakta modul: "${stmt}"`
+            };
+        }
+
+        function createVariant2(num, stmt) {
+            const id = (num - 1) * 3 + 2;
+            const correctText = `Karena ${stmt.toLowerCase()}`;
+            const distractors = [
+                `Sebab adanya instruksi internasional untuk menghentikan seluruh program konvensional di era transformasi digital.`,
+                `Karena ditemukannya fluktuasi biaya operasional yang mengharuskan pembatalan skema distribusi daerah.`,
+                `Guna mengantisipasi penurunan indeks persaingan global akibat regulasi domestik yang berlebihan.`
+            ];
+
+            const options = [
+                { key: 'A', text: distractors[0], correct: false },
+                { key: 'B', text: correctText, correct: true },
+                { key: 'C', text: distractors[1], correct: false },
+                { key: 'D', text: distractors[2], correct: false }
+            ];
+
+            return {
+                id: id,
+                modulNum: num,
+                variant: 2,
+                variantLabel: "Variasi 2 (Sebab & Alasan)",
+                sourceText: stmt,
+                question: `Memperhatikan konteks berikut: "${stmt}", mengapa hal atau kebijakan tersebut menjadi perhatian yang sangat krusial saat ini?`,
+                options: options,
+                explanation: `Sesuai fakta modul: "${stmt}"`
+            };
+        }
+
+        function createVariant3(num, stmt) {
+            const id = (num - 1) * 3 + 3;
+            const correctText = stmt;
+            const tweak1 = stmt.replace("meningkatkan", "membatasi").replace("memperluas", "menghentikan sementara");
+            const tweak2 = stmt.replace("jangka panjang", "jangka pendek secara terdesentralisasi").replace("nasional", "regional kawasan");
+            const tweak3 = stmt.replace("mengurangi ketergantungan", "menghapuskan total seluruh ketergantungan");
+
+            const distractors = [
+                tweak1 !== stmt ? tweak1 : `Kebijakan tersebut telah resmi dibekukan oleh instansi terkait untuk dievaluasi ulang secara terpusat.`,
+                tweak2 !== stmt ? tweak2 : `Pelaksanaan langkah ini difokuskan khusus untuk sektor swasta tanpa melibatkan institusi pemerintah.`,
+                tweak3 !== stmt ? tweak3 : `Program ini hanya dilaksanakan selama fase darurat dan tidak berdampak pada jangka panjang.`
+            ];
+
+            const options = [
+                { key: 'A', text: distractors[0], correct: false },
+                { key: 'B', text: distractors[1], correct: false },
+                { key: 'C', text: distractors[2], correct: false },
+                { key: 'D', text: correctText, correct: true }
+            ];
+
+            return {
+                id: id,
+                modulNum: num,
+                variant: 3,
+                variantLabel: "Variasi 3 (Analisis Kesesuaian Faktual)",
+                sourceText: stmt,
+                question: `Mengenai isu berikut: "${stmt}", manakah dari pilihan di bawah ini yang paling tepat dan 100% sesuai dengan fakta resminya?`,
+                options: options,
+                explanation: `Sesuai fakta modul: "${stmt}"`
+            };
+        }
+
+        let currentKamusQuestions = [];
+        let sessionQuestions = [];
+        let sessionIndex = 0;
+        let userSessionAnswers = {};
+        let sessionTimerInterval = null;
+        let sessionSeconds = 0;
+        let sessionConfig = { executionMode: 'hp', count: 20, modulRange: 'ALL', shuffle: true };
+
+        // Flashcard State
+        let flashcardDeck = [];
+        let flashcardIndex = 0;
+        let isFlashcardFlipped = false;
+        let flashcardStats = { mastered: 0, review: 0 };
+
+        // Router Functions
+        function showLandingView() {
+            stopSessionTimer();
+            document.getElementById('viewLanding')?.classList.remove('hidden');
+            document.getElementById('viewSession')?.classList.add('hidden');
+            document.getElementById('viewKamus')?.classList.add('hidden');
+            document.getElementById('viewFlashcard')?.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showKamusView() {
+            stopSessionTimer();
+            document.getElementById('viewLanding')?.classList.add('hidden');
+            document.getElementById('viewSession')?.classList.add('hidden');
+            document.getElementById('viewKamus')?.classList.remove('hidden');
+            document.getElementById('viewFlashcard')?.classList.add('hidden');
+            applyKamusFilters();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function onPillCenterHover() {
+            document.getElementById('pillWrapper')?.classList.add('pill-split');
+            const secret = document.getElementById('secretCore');
+            if (secret) {
+                secret.classList.remove('opacity-0', 'pointer-events-none');
+                secret.classList.add('opacity-100');
+            }
+        }
+
+        function onPillCenterLeave() {
+            document.getElementById('pillWrapper')?.classList.remove('pill-split');
+            const secret = document.getElementById('secretCore');
+            if (secret) {
+                secret.classList.add('opacity-0', 'pointer-events-none');
+                secret.classList.remove('opacity-100');
+            }
+        }
+
+        function openSessionConfigModal() {
+            document.getElementById('sessionConfigModal')?.classList.remove('hidden');
+        }
+
+        function closeSessionConfigModal() {
+            document.getElementById('sessionConfigModal')?.classList.add('hidden');
+        }
+
+        function presetModeAndOpenModal(mode) {
+            openSessionConfigModal();
+            const radHP = document.querySelector('input[name="cfgExecMode"][value="hp"]');
+            const radBuku = document.querySelector('input[name="cfgExecMode"][value="buku"]');
+            if (mode === 'hp' && radHP) radHP.checked = true;
+            if (mode === 'buku' && radBuku) radBuku.checked = true;
+            updateExecModeUI();
+        }
+
+        function updateExecModeUI() {
+            const selected = document.querySelector('input[name="cfgExecMode"]:checked')?.value || 'hp';
+            const lblHP = document.getElementById('lblModeHP');
+            const lblBuku = document.getElementById('lblModeBuku');
+
+            if (selected === 'hp') {
+                if (lblHP) lblHP.className = "border-2 border-red-500 bg-red-950/30 p-3 rounded-xl cursor-pointer flex flex-col justify-between transition";
+                if (lblBuku) lblBuku.className = "border border-slate-800 bg-slate-950 p-3 rounded-xl cursor-pointer flex flex-col justify-between transition";
+            } else {
+                if (lblHP) lblHP.className = "border border-slate-800 bg-slate-950 p-3 rounded-xl cursor-pointer flex flex-col justify-between transition";
+                if (lblBuku) lblBuku.className = "border-2 border-red-500 bg-red-950/30 p-3 rounded-xl cursor-pointer flex flex-col justify-between transition";
+            }
+        }
+
+        function startSessionWithConfig() {
+            const selectedMode = document.querySelector('input[name="cfgExecMode"]:checked')?.value || 'hp';
+            const countVal = parseInt(document.getElementById('cfgCount')?.value || '20');
+            const rangeVal = document.getElementById('cfgModulRange')?.value || 'ALL';
+            const shuffle = document.getElementById('cfgShuffle')?.checked ?? true;
+
+            sessionConfig = { executionMode: selectedMode, count: countVal, modulRange: rangeVal, shuffle };
+
+            let pool = ALL_QUESTIONS.filter(q => {
+                if (rangeVal === 'ALL') return true;
+                const [min, max] = rangeVal.split('-').map(Number);
+                return q.modulNum >= min && q.modulNum <= max;
+            });
+
+            let poolCopy = JSON.parse(JSON.stringify(pool));
+            if (shuffle) {
+                poolCopy = poolCopy.sort(() => Math.random() - 0.5);
+                poolCopy.forEach(q => {
+                    q.options = q.options.sort(() => Math.random() - 0.5);
+                });
+            }
+
+            sessionQuestions = poolCopy.slice(0, countVal);
+            sessionIndex = 0;
+            userSessionAnswers = {};
+
+            closeSessionConfigModal();
+
+            document.getElementById('viewLanding')?.classList.add('hidden');
+            document.getElementById('viewKamus')?.classList.add('hidden');
+            document.getElementById('viewFlashcard')?.classList.add('hidden');
+            document.getElementById('viewSession')?.classList.remove('hidden');
+
+            startSessionTimer();
+
+            const btnFinishHeader = document.getElementById('btnHeaderFinish');
+
+            if (sessionConfig.executionMode === 'hp') {
+                if (btnFinishHeader) btnFinishHeader.classList.remove('hidden');
+                document.getElementById('sessionProgressBarContainer')?.classList.remove('hidden');
+                document.getElementById('sessionHPContainer')?.classList.remove('hidden');
+                document.getElementById('sessionBukuContainer')?.classList.add('hidden');
+                renderSessionQuestionHP();
+            } else {
+                if (btnFinishHeader) btnFinishHeader.classList.add('hidden');
+                document.getElementById('sessionProgressBarContainer')?.classList.add('hidden');
+                document.getElementById('sessionHPContainer')?.classList.add('hidden');
+                document.getElementById('sessionBukuContainer')?.classList.remove('hidden');
+                renderSessionBukuList();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startSessionTimer() {
+            stopSessionTimer();
+            sessionSeconds = 0;
+            const timerEl = document.getElementById('sessionTimer');
+            sessionTimerInterval = setInterval(() => {
+                sessionSeconds++;
+                const mins = String(Math.floor(sessionSeconds / 60)).padStart(2, '0');
+                const secs = String(sessionSeconds % 60).padStart(2, '0');
+                if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopSessionTimer() {
+            if (sessionTimerInterval) {
+                clearInterval(sessionTimerInterval);
+                sessionTimerInterval = null;
+            }
+        }
+
+        function renderSessionQuestionHP() {
+            if (sessionQuestions.length === 0) return;
+
+            const q = sessionQuestions[sessionIndex];
+            const total = sessionQuestions.length;
+
+            const pct = ((sessionIndex) / total) * 100;
+            const pb = document.getElementById('sessionProgressBar');
+            if (pb) pb.style.width = `${pct}%`;
+
+            const sqt = document.getElementById('sessionQuestionText');
+            if (sqt) sqt.textContent = q.question;
+
+            const container = document.getElementById('sessionOptionsContainer');
+            if (!container) return;
+
+            let html = '';
+            const optKeys = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, idx) => {
+                const displayKey = optKeys[idx];
+
+                html += `
+                <div onclick="selectSessionOptionHP('${q.id}', '${opt.key}')" 
+                    class="p-4 sm:p-5 border border-slate-800 bg-slate-950/60 hover:border-red-500 hover:bg-red-950/20 rounded-2xl text-xs sm:text-sm flex items-start cursor-pointer transition-all duration-150 group shadow-xs">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold text-xs mr-3.5 shrink-0 group-hover:border-red-500 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                        ${displayKey}
+                    </span>
+                    <span class="mt-0.5 leading-relaxed text-slate-200 font-medium">${opt.text}</span>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectSessionOptionHP(qId, key) {
+            userSessionAnswers[qId] = key;
+            sessionIndex++;
+            if (sessionIndex < sessionQuestions.length) {
+                renderSessionQuestionHP();
+            } else {
+                const pb = document.getElementById('sessionProgressBar');
+                if (pb) pb.style.width = `100%`;
+                finishSession();
+            }
+        }
+
+        function renderSessionBukuList() {
+            const container = document.getElementById('sessionBukuQuestionsList');
+            if (!container) return;
+
+            let html = '';
+            const optKeys = ['A', 'B', 'C', 'D'];
+
+            sessionQuestions.forEach((q, qIdx) => {
+                html += `
+                <div class="bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-md space-y-4">
+                    <div class="text-xs font-extrabold text-red-400 uppercase tracking-wider">
+                        Soal Nomor ${qIdx + 1}
+                    </div>
+
+                    <div class="text-sm sm:text-base font-bold text-slate-100 leading-relaxed">
+                        ${q.question}
+                    </div>
+
+                    <div class="space-y-2.5 pt-1">
+                        ${q.options.map((opt, optIdx) => `
+                            <div class="p-3 sm:p-3.5 border border-slate-800/80 bg-slate-950/60 rounded-xl text-xs sm:text-sm flex items-start text-slate-300">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 font-bold text-xs mr-3 shrink-0">
+                                    ${optKeys[optIdx]}
+                                </span>
+                                <span class="mt-0.5 leading-relaxed">${opt.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function confirmExitSession() {
+            if (confirm("Apakah Anda yakin ingin keluar dari Sesi Latihan?")) {
+                showLandingView();
+            }
+        }
+
+        function finishSession() {
+            stopSessionTimer();
+
+            let correctCount = 0;
+            sessionQuestions.forEach(q => {
+                const userAnsKey = userSessionAnswers[q.id];
+                const correctOpt = q.options.find(o => o.correct);
+                if (userAnsKey && userAnsKey === correctOpt.key) {
+                    correctCount++;
+                }
+            });
+
+            const total = sessionQuestions.length;
+            const pctVal = sessionConfig.executionMode === 'buku' ? null : Math.round((correctCount / total) * 100);
+            const pctStr = sessionConfig.executionMode === 'buku' ? '-' : pctVal + '%';
+
+            const mins = String(Math.floor(sessionSeconds / 60)).padStart(2, '0');
+            const secs = String(sessionSeconds % 60).padStart(2, '0');
+            const timeStr = `${mins}:${secs}`;
+
+            // Save log to Laporan Sesi
+            const now = new Date();
+            const timestamp = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' +
+                              now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            const logItem = {
+                id: Date.now(),
+                timestamp: timestamp,
+                mode: sessionConfig.executionMode === 'hp' ? 'Pengerjaan HP' : 'Pengerjaan Buku',
+                total: total,
+                correct: sessionConfig.executionMode === 'buku' ? null : correctCount,
+                wrong: sessionConfig.executionMode === 'buku' ? null : (total - correctCount),
+                score: pctVal,
+                timeStr: timeStr
+            };
+
+            SESSION_HISTORY.unshift(logItem);
+            saveSessionHistory();
+
+            const scoreEl = document.getElementById('resScorePercent');
+            const fracEl = document.getElementById('resCorrectFraction');
+            const timeEl = document.getElementById('resTimeTaken');
+
+            if (scoreEl) scoreEl.textContent = pctStr;
+            if (fracEl) fracEl.textContent = sessionConfig.executionMode === 'buku' ? `${total} Soal` : `${correctCount}/${total}`;
+            if (timeEl) timeEl.textContent = timeStr;
+
+            const reviewContainer = document.getElementById('resReviewContainer');
+            if (reviewContainer) {
+                let reviewHtml = '';
+
+                if (sessionConfig.executionMode === 'buku') {
+                    // COMPACT ANSWER KEY ONLY
+                    reviewHtml += `
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="text-xs font-bold text-slate-300 uppercase tracking-wider">Kunci Jawaban Akhir Ringkas (Mode Buku):</div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5 font-mono text-xs">
+                    `;
+                    
+                    sessionQuestions.forEach((q, idx) => {
+                        const correctOpt = q.options.find(o => o.correct);
+                        reviewHtml += `
+                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                                <span class="text-slate-400 font-sans">#${idx + 1}</span>
+                                <span class="font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">${correctOpt ? correctOpt.key : '-'}</span>
+                            </div>
+                        `;
+                    });
+
+                    reviewHtml += `
+                        </div>
+                    </div>
+                    `;
+                } else {
+                    // Detailed Breakdown for HP Mode
+                    sessionQuestions.forEach((q, idx) => {
+                        const userAnsKey = userSessionAnswers[q.id];
+                        const correctOpt = q.options.find(o => o.correct);
+                        const isCorrect = userAnsKey === correctOpt.key;
+
+                        const statusBadge = isCorrect ? '<span class="text-emerald-400">BENAR</span>' : '<span class="text-red-400">SALAH / KOSONG</span>';
+
+                        reviewHtml += `
+                        <div class="p-4 rounded-2xl border text-xs space-y-2 ${isCorrect ? 'bg-emerald-950/20 border-emerald-800/60' : 'bg-red-950/20 border-red-900/60'}">
+                            <div class="flex justify-between items-center font-bold">
+                                <span class="text-slate-200">Soal #${idx + 1}</span>
+                                <span class="uppercase">${statusBadge}</span>
+                            </div>
+                            <p class="font-bold text-slate-100 leading-relaxed">${q.question}</p>
+                            <div class="text-[11px] text-slate-300 bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1">
+                                <div><strong>Jawaban Anda:</strong> ${userAnsKey ? userAnsKey + '. ' + (q.options.find(o => o.key === userAnsKey)?.text || '') : '<em>Tidak dijawab</em>'}</div>
+                                <div class="text-emerald-400 font-semibold"><strong>Kunci Benar:</strong> ${correctOpt.key}. ${correctOpt.text}</div>
+                            </div>
+                        </div>
+                        `;
+                    });
+                }
+
+                reviewContainer.innerHTML = reviewHtml;
+            }
+
+            document.getElementById('sessionResultModal')?.classList.remove('hidden');
+        }
+
+        function closeResultModalAndHome() {
+            document.getElementById('sessionResultModal')?.classList.add('hidden');
+            showLandingView();
+        }
+
+        function startFlashcardMode() {
+            flashcardDeck = JSON.parse(JSON.stringify(ALL_QUESTIONS)).sort(() => Math.random() - 0.5);
+            flashcardIndex = 0;
+            flashcardStats = { mastered: 0, review: 0 };
+            isFlashcardFlipped = false;
+
+            document.getElementById('viewLanding')?.classList.add('hidden');
+            document.getElementById('viewSession')?.classList.add('hidden');
+            document.getElementById('viewKamus')?.classList.add('hidden');
+            document.getElementById('viewFlashcard')?.classList.remove('hidden');
+
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            if (flashcardDeck.length === 0) return;
+            const item = flashcardDeck[flashcardIndex];
+
+            const fcCur = document.getElementById('fcCurrentNum');
+            const fcTot = document.getElementById('fcTotalNum');
+            if (fcCur) fcCur.textContent = flashcardIndex + 1;
+            if (fcTot) fcTot.textContent = Math.min(20, flashcardDeck.length);
+
+            // Front
+            const fcFront = document.getElementById('fcFrontText');
+            if (fcFront) fcFront.textContent = item.question;
+
+            // Back
+            const correctOpt = item.options.find(o => o.correct);
+            const fcBackAns = document.getElementById('fcBackAnswer');
+            const fcBackExc = document.getElementById('fcBackExcerpt');
+            if (fcBackAns) fcBackAns.textContent = `${correctOpt.key}. ${correctOpt.text}`;
+            if (fcBackExc) fcBackExc.textContent = `Fakta Modul: "${item.sourceText}"`;
+
+            // Reset Flip State
+            isFlashcardFlipped = false;
+            const el = document.getElementById('flashcardElement');
+            if (el) el.classList.remove('rotate-y-180');
+        }
+
+        function toggleFlashcardFlip() {
+            isFlashcardFlipped = !isFlashcardFlipped;
+            const el = document.getElementById('flashcardElement');
+            if (el) {
+                if (isFlashcardFlipped) el.classList.add('rotate-y-180');
+                else el.classList.remove('rotate-y-180');
+            }
+        }
+
+        function handleFlashcardRating(mastered) {
+            if (mastered) flashcardStats.mastered++;
+            else flashcardStats.review++;
+
+            flashcardIndex++;
+            if (flashcardIndex >= Math.min(20, flashcardDeck.length)) {
+                finishFlashcardSession();
+            } else {
+                renderFlashcard();
+            }
+        }
+
+        function finishFlashcardSession() {
+            const total = flashcardStats.mastered + flashcardStats.review;
+            const scorePct = total > 0 ? Math.round((flashcardStats.mastered / total) * 100) : 100;
+
+            const now = new Date();
+            const timestamp = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' +
+                              now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            const logItem = {
+                id: Date.now(),
+                timestamp: timestamp,
+                mode: 'Flashcard Memori',
+                total: total,
+                correct: flashcardStats.mastered,
+                wrong: flashcardStats.review,
+                score: scorePct,
+                timeStr: 'Flashcard'
+            };
+
+            SESSION_HISTORY.unshift(logItem);
+            saveSessionHistory();
+
+            alert(`Sesi Flashcard selesai!\nSudah Paham: ${flashcardStats.mastered}\nPerlu Diulangi: ${flashcardStats.review}\nHasil dicatat di Laporan.`);
+            showLandingView();
+        }
+
+        function loadSessionHistory() {
+            try {
+                const stored = localStorage.getItem('pil_news_update_history_v2');
+                if (stored) SESSION_HISTORY = JSON.parse(stored);
+            } catch (e) {
+                SESSION_HISTORY = [];
+            }
+        }
+
+        function saveSessionHistory() {
+            try {
+                localStorage.setItem('pil_news_update_history_v2', JSON.stringify(SESSION_HISTORY));
+            } catch (e) {}
+        }
+
+        function showLaporanModal() {
+            renderLaporanData();
+            document.getElementById('laporanModal')?.classList.remove('hidden');
+        }
+
+        function closeLaporanModal() {
+            document.getElementById('laporanModal')?.classList.add('hidden');
+        }
+
+        function renderLaporanData() {
+            const container = document.getElementById('laporanLogsContainer');
+            if (!container) return;
+
+            const totalSess = SESSION_HISTORY.length;
+            let totalQ = 0;
+            let totalCorr = 0;
+            let scoresSum = 0;
+            let countedCount = 0;
+
+            SESSION_HISTORY.forEach(item => {
+                totalQ += item.total || 0;
+                if (item.correct !== null && item.correct !== undefined) {
+                    totalCorr += item.correct;
+                    scoresSum += (item.score || 0);
+                    countedCount++;
+                }
+            });
+
+            const avgScore = countedCount > 0 ? Math.round(scoresSum / countedCount) : 0;
+
+            const lapSess = document.getElementById('lapTotalSessions');
+            const lapQ = document.getElementById('lapTotalQuestions');
+            const lapCorr = document.getElementById('lapTotalCorrect');
+            const lapAvg = document.getElementById('lapAvgScore');
+
+            if (lapSess) lapSess.textContent = totalSess;
+            if (lapQ) lapQ.textContent = totalQ;
+            if (lapCorr) lapCorr.textContent = totalCorr;
+            if (lapAvg) lapAvg.textContent = `${avgScore}%`;
+
+            if (SESSION_HISTORY.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center bg-slate-950 border border-slate-800 rounded-2xl text-xs text-slate-500">
+                        Belum ada riwayat pengerjaan. Mulai Sesi HP, Buku, atau Flashcard untuk merekam data.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            SESSION_HISTORY.forEach(log => {
+                const scoreBadge = log.score !== null ? `${log.score}%` : 'Selesai';
+                
+                html += `
+                <div class="p-3.5 bg-slate-950 border border-slate-800 rounded-2xl flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div>
+                        <div class="font-bold text-white flex items-center space-x-2">
+                            <span class="text-red-400">${log.mode}</span>
+                            <span class="text-[10px] font-normal text-slate-500">&bull; ${log.timestamp}</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">
+                            Total: <strong>${log.total} Soal</strong> ${log.correct !== null ? `&bull; Benar: <strong class="text-emerald-400">${log.correct}</strong> &bull; Salah: <strong class="text-red-400">${log.wrong}</strong>` : ''} &bull; Waktu: <strong>${log.timeStr}</strong>
+                        </div>
+                    </div>
+                    <div class="font-black text-xs px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-amber-400">
+                        ${scoreBadge}
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function copyLaporanText() {
+            if (SESSION_HISTORY.length === 0) {
+                alert("Belum ada riwayat pengerjaan laporan untuk disalin.");
+                return;
+            }
+
+            let text = "=== LAPORAN PENGERJAAN PIL NEWS UPDATE ===\n";
+            text += `Tanggal Laporan: ${new Date().toLocaleString('id-ID')}\n`;
+            text += `Total Sesi: ${SESSION_HISTORY.length}\n\n`;
+
+            SESSION_HISTORY.forEach((log, idx) => {
+                text += `${idx + 1}. [${log.timestamp}] ${log.mode}\n`;
+                text += `   Total Soal: ${log.total} | Skor: ${log.score !== null ? log.score + '%' : 'Selesai'}\n`;
+                if (log.correct !== null) {
+                    text += `   Benar: ${log.correct} | Salah: ${log.wrong} | Waktu: ${log.timeStr}\n`;
+                }
+                text += `------------------------------------\n`;
+            });
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            alert("Laporan pengerjaan berhasil disalin ke clipboard!");
+        }
+
+        function clearLaporanHistory() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh riwayat pengerjaan laporan?")) {
+                SESSION_HISTORY = [];
+                saveSessionHistory();
+                renderLaporanData();
+            }
+        }
+
+        function initKamusDropdown() {
+            const select = document.getElementById('modulFilter');
+            if (!select) return;
+            select.innerHTML = '<option value="ALL">Semua Modul (1 - 100)</option>';
+            for (let i = 1; i <= 100; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `Modul No. ${i} (${MODUL_STATEMENTS[i-1].substring(0, 28)}...)`;
+                select.appendChild(opt);
+            }
+        }
+
+        function applyKamusFilters() {
+            const query = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+            const selectedModul = document.getElementById('modulFilter')?.value || 'ALL';
+            const selectedVariant = document.getElementById('variantFilter')?.value || 'ALL';
+
+            currentKamusQuestions = ALL_QUESTIONS.filter(q => {
+                if (selectedModul !== 'ALL' && q.modulNum !== parseInt(selectedModul)) return false;
+                if (selectedVariant !== 'ALL' && q.variant !== parseInt(selectedVariant)) return false;
+                if (query !== '') {
+                    const matchId = q.id.toString() === query;
+                    const matchQuestion = q.question.toLowerCase().includes(query);
+                    const matchSource = q.sourceText.toLowerCase().includes(query);
+                    const matchOptions = q.options.some(o => o.text.toLowerCase().includes(query));
+                    return matchId || matchQuestion || matchSource || matchOptions;
+                }
+                return true;
+            });
+
+            const scEl = document.getElementById('showingCount');
+            if (scEl) scEl.textContent = currentKamusQuestions.length;
+
+            const container = document.getElementById('questionsContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (currentKamusQuestions.length === 0) {
+                if (container) container.style.display = 'none';
+                if (emptyState) emptyState.classList.remove('hidden');
+            } else {
+                if (container) container.style.display = 'block';
+                if (emptyState) emptyState.classList.add('hidden');
+                renderKamusQuestions();
+            }
+        }
+
+        function renderKamusQuestions() {
+            const container = document.getElementById('questionsContainer');
+            if (!container) return;
+
+            const showSource = document.getElementById('toggleSourcePDF')?.checked ?? true;
+            const showAns = document.getElementById('toggleAnswers')?.checked ?? true;
+
+            let html = '';
+
+            currentKamusQuestions.forEach(q => {
+                html += `
+                <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 space-y-3">
+                    <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-red-600 text-white font-mono text-[10px] px-2 py-0.5 rounded font-bold">#${q.id}</span>
+                            <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Modul #${q.modulNum}</span>
+                            <span class="text-slate-400">${q.variantLabel}</span>
+                        </div>
+                    </div>
+
+                    ${showSource ? `
+                        <div class="text-xs text-amber-300 bg-amber-950/30 p-2.5 rounded-xl border border-amber-900/40 italic">
+                            Fakta PDF Modul: "${q.sourceText}"
+                        </div>
+                    ` : ''}
+
+                    <div class="text-sm font-bold text-white leading-relaxed">
+                        ${q.question}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
+                        ${q.options.map(opt => `
+                            <div class="p-2.5 rounded-xl border ${showAns && opt.correct ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-300 font-semibold' : 'bg-slate-950 border-slate-800'} flex items-start">
+                                <span class="font-bold mr-2 text-slate-400">[${opt.key}]</span>
+                                <span>${opt.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function initApp() {
+            generate300Questions();
+            initKamusDropdown();
+            loadSessionHistory();
+
+            document.getElementById('searchInput')?.addEventListener('input', applyKamusFilters);
+            document.getElementById('modulFilter')?.addEventListener('change', applyKamusFilters);
+            document.getElementById('variantFilter')?.addEventListener('change', applyKamusFilters);
+            document.getElementById('toggleSourcePDF')?.addEventListener('change', renderKamusQuestions);
+            document.getElementById('toggleAnswers')?.addEventListener('change', renderKamusQuestions);
+
+            showLandingView();
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
