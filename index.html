@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pil News Update - Bank Soal & Flashcard Verifikator (300 Soal)</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Pil News Update - Bank Soal & Flashcard Verifikator (100 Soal)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -99,7 +98,7 @@
                         Pil News Update
                         <span class="text-[10px] bg-red-500/20 text-red-400 font-mono px-2 py-0.5 rounded-full border border-red-500/30">100 MODUL</span>
                     </h1>
-                    <p class="text-[11px] text-slate-400 font-medium">300 Soal Terverifikasi &bull; Sesi HP, Buku & Flashcard</p>
+                    <p class="text-[11px] text-slate-400 font-medium">100 Soal Terverifikasi &bull; Sesi HP, Buku & Flashcard</p>
                 </div>
             </div>
             
@@ -151,7 +150,7 @@
                 <!-- Main Literal Capsule Wrapper -->
                 <div id="pillWrapper" class="relative w-full h-36 sm:h-48 flex items-center justify-center filter drop-shadow-2xl">
                     
-                    <!-- Center Seam Expanded Hitbox (Wider w-12 sm:w-16 for smooth hover) -->
+                    <!-- Center Seam Expanded Hitbox -->
                     <div onmouseenter="onPillCenterHover()" 
                          onmouseleave="onPillCenterLeave()" 
                          onclick="startFlashcardMode()" 
@@ -256,7 +255,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- VIEW 3: MODE FLASHCARD MEMORI (RAHASIA)    -->
+        <!-- VIEW 3: MODE FLASHCARD MEMORI             -->
         <!-- ========================================== -->
         <div id="viewFlashcard" class="hidden space-y-6 max-w-2xl mx-auto w-full my-auto">
             
@@ -329,7 +328,7 @@
                     <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
                         <span>📖 Kamus Bank Soal News Update</span>
                     </h2>
-                    <p class="text-xs text-slate-400 mt-1">300 Soal PG Terverifikasi 100% dari 100 Modul PDF</p>
+                    <p class="text-xs text-slate-400 mt-1">100 Soal PG Terverifikasi 100% dari 100 Modul PDF</p>
                 </div>
                 
                 <div class="flex items-center space-x-2">
@@ -341,23 +340,16 @@
 
             <!-- Filter Controls Bar -->
             <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input type="text" id="searchInput" placeholder="Cari soal, nomor modul, kata kunci..." class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500">
                     
                     <select id="modulFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-red-500">
                         <option value="ALL">Semua Modul (1 - 100)</option>
                     </select>
-
-                    <select id="variantFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-red-500">
-                        <option value="ALL">Semua Variasi Soal</option>
-                        <option value="1">Variasi 1 (Tujuan / Maksud)</option>
-                        <option value="2">Variasi 2 (Sebab / Alasan)</option>
-                        <option value="3">Variasi 3 (Analisis Kesesuaian Teks)</option>
-                    </select>
                 </div>
 
                 <div class="flex flex-wrap justify-between items-center text-xs text-slate-400 pt-2 border-t border-slate-800/80">
-                    <div>Menampilkan <strong id="showingCount" class="text-white">300</strong> Soal Terverifikasi</div>
+                    <div>Menampilkan <strong id="showingCount" class="text-white">100</strong> Soal Terverifikasi</div>
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center space-x-2 cursor-pointer">
                             <input type="checkbox" id="toggleAnswers" checked class="rounded bg-slate-950 border-slate-800 text-red-600 focus:ring-0">
@@ -417,7 +409,7 @@
                         <option value="10">10 Soal (Cepat)</option>
                         <option value="20" selected>20 Soal (Standar)</option>
                         <option value="50">50 Soal (Intensif)</option>
-                        <option value="100">100 Soal (Full Marathon)</option>
+                        <option value="100">100 Soal (Full Modul)</option>
                     </select>
                 </div>
 
@@ -473,7 +465,7 @@
 
             <!-- Review Container -->
             <div id="resReviewContainer" class="overflow-y-auto custom-scrollbar flex-grow space-y-3 pr-1">
-                <!-- Injected (Compact keys for Buku mode) -->
+                <!-- Injected -->
             </div>
 
             <button onclick="closeResultModalAndHome()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl text-xs transition border border-slate-700 shrink-0">
@@ -649,28 +641,119 @@
         let ALL_QUESTIONS = [];
         let SESSION_HISTORY = [];
 
-        function generate300Questions() {
+        function generate100Questions() {
             ALL_QUESTIONS = [];
 
             MODUL_STATEMENTS.forEach((stmt, idx) => {
                 const modulNum = idx + 1;
-
-                const q1 = createVariant1(modulNum, stmt);
-                const q2 = createVariant2(modulNum, stmt);
-                const q3 = createVariant3(modulNum, stmt);
-
-                ALL_QUESTIONS.push(q1, q2, q3);
+                const questionObj = createSingleQuestionForModule(modulNum, stmt);
+                ALL_QUESTIONS.push(questionObj);
             });
         }
 
-        function createVariant1(num, stmt) {
-            const id = (num - 1) * 3 + 1;
-            const correctText = `Memastikan bahwa ${stmt.toLowerCase().replace(/^\w/, c => c.toUpperCase())}`;
-            const distractors = [
-                `Meningkatkan alokasi pembiayaan publik secara instan tanpa melalui proses evaluasi efektivitas jangka panjang.`,
-                `Mengalihkan pelaksanaan program sepenuhnya kepada pihak swasta untuk memangkas keterlibatan instansi daerah.`,
-                `Membatasi akses layanan bagi kelompok tertentu guna mengalihkan anggaran ke program pendukung nasional.`
+        // Helper function to split statement into Sentence 1 & Sentence 2 prompt prefix + completion
+        function splitStatementToQuestion(num, stmt) {
+            let parts = stmt.split(/\.\s+/);
+            let sent1 = parts[0].trim();
+            if (!sent1.endsWith('.')) sent1 += '.';
+
+            let sent2 = parts.slice(1).join('. ').trim();
+            if (sent2.endsWith('.')) sent2 = sent2.slice(0, -1);
+
+            // Priority keywords to split Sentence 2 into prompt prefix and exact correct completion
+            const splitKeywords = [
+                "dilakukan untuk", "diharapkan dapat", "diharapkan mampu", "diharapkan", 
+                "menjadi bagian dari", "menjadi salah satu", "menjadi sangat", "menjadi", 
+                "membuka", "dapat mengurangi", "dapat mempercepat", "dapat", "mampu", 
+                "mencakup", "juga mendukung", "juga", "bertujuan untuk", "bertujuan", 
+                "dinilai dapat", "terus diperkuat", "penting untuk", "masih terus dikembangkan untuk", 
+                "membantu meningkatkan", "membantu", "terus mencari", "terus dilakukan", 
+                "menunjukkan", "harus menerapkan", "mulai memperkuat", "menjadi pihak yang paling", 
+                "perlu beradaptasi dengan", "memberikan insentif untuk", "berlomba menciptakan", 
+                "Tujuannya adalah", "perlu lebih waspada dalam", "semakin terbuka lebar", 
+                "menarik perhatian", "memberikan kesempatan", "menjadi yang pertama", 
+                "bertujuan meningkatkan", "diprediksi menjadi", "turut merasakan", 
+                "menjadi salah satu platform", "berlangsung secara", "harus menunjukkan", 
+                "mampu menyatukan", "berlomba mengembangkan", "menjadi langkah awal", 
+                "terus digelontorkan untuk", "mampu menjangkau", "berupaya menjaga", 
+                "terus bermunculan untuk", "meningkatkan anggaran", "diimbau lebih berhati-hati dalam", 
+                "sangat menentukan", "memengaruhi", "berpotensi memengaruhi", "dapat menyebabkan", 
+                "diarahkan pada", "terus menyesuaikan", "menetapkan target", "didorong untuk", 
+                "menyebabkan", "memperkuat sistem", "diperkirakan terus", "menciptakan", 
+                "diprediksi akan", "melakukan perjalanan ke", "menunjukkan besarnya", 
+                "membuat hasil", "mengenal", "berlomba menghadirkan", "membuat kendaraan", 
+                "menjadi salah satu negara yang", "menjadi faktor pendorong", "terus berinovasi untuk", 
+                "semakin terbiasa", "menjadi faktor penting", "berhasil mengembangkan", 
+                "diharapkan meningkatkan", "berpotensi menciptakan", "mencari talenta dengan", 
+                "dianggap penting dalam", "mulai dibahas pada", "membantu menciptakan", 
+                "menjadi tantangan yang", "akan memengaruhi", "memiliki peluang lebih besar untuk"
             ];
+
+            let prefix = "";
+            let completion = "";
+
+            for (let kw of splitKeywords) {
+                let idx = sent2.indexOf(kw);
+                if (idx !== -1) {
+                    prefix = sent2.substring(0, idx + kw.length).trim();
+                    completion = sent2.substring(idx + kw.length).trim();
+                    break;
+                }
+            }
+
+            // Fallback split if keyword matching is not triggered
+            if (!prefix || !completion) {
+                let words = sent2.split(' ');
+                let splitIdx = Math.max(2, Math.floor(words.length * 0.4));
+                prefix = words.slice(0, splitIdx).join(' ');
+                completion = words.slice(splitIdx).join(' ');
+            }
+
+            if (!prefix.endsWith('...')) prefix += '...';
+            
+            completion = completion.charAt(0).toUpperCase() + completion.slice(1);
+            if (!completion.endsWith('.')) completion += '.';
+
+            return { sent1, prefix, completion, sent2 };
+        }
+
+        // Generate grammatically plausible distractors matching the topic
+        function getDistractorsForModule(num, splitData) {
+            const comp = splitData.completion;
+            const words = comp.split(' ');
+            const firstWord = words[0].toLowerCase();
+
+            if (firstWord.startsWith('mem') || firstWord.startsWith('men') || firstWord.startsWith('meng')) {
+                return [
+                    "Membatasi alokasi pendukung agar pelaksanaan fokus pada area perkotaan saja.",
+                    "Mengalihkan pelaksanaan program sepenuhnya kepada pihak swasta tanpa evaluasi.",
+                    "Menghentikan sementara skema operasional guna menekan pengeluaran belanja."
+                ];
+            } else if (firstWord.startsWith('di') || firstWord.startsWith('ter')) {
+                return [
+                    "Diperkirakan mengalami penurunan secara bertahap dalam beberapa tahun mendatang.",
+                    "Dibatasi pelaksanaannya khusus untuk wilayah prioritas tingkat pertama.",
+                    "Ditunda penerapannya sampai tercapai kesepakatan regulasi antar-instansi."
+                ];
+            } else if (firstWord === 'sangat' || firstWord === 'agak' || firstWord === 'paling') {
+                return [
+                    "Kurang relevan terhadap perkembangan strategi nasional jangka panjang.",
+                    "Hanya berdampak pada sektor ekonomi tertentu tanpa mempengaruhi masyarakat luas.",
+                    "Cenderung melambat akibat belum siapnya regulasi pendukung di daerah."
+                ];
+            } else {
+                return [
+                    "Mengalami hambatan teknis akibat keterbatasan anggaran di tingkat daerah.",
+                    "Dibatasi akses penerapannya guna menghindari risiko fluktuasi pasar.",
+                    "Memerlukan penyesuaian ulang terhadap regulasi dan pedoman kerja nasional."
+                ];
+            }
+        }
+
+        function createSingleQuestionForModule(num, stmt) {
+            const splitData = splitStatementToQuestion(num, stmt);
+            const correctText = splitData.completion;
+            const distractors = getDistractorsForModule(num, splitData);
 
             const options = [
                 { key: 'A', text: correctText, correct: true },
@@ -680,72 +763,10 @@
             ];
 
             return {
-                id: id,
+                id: num,
                 modulNum: num,
-                variant: 1,
-                variantLabel: "Variasi 1 (Tujuan Utama)",
                 sourceText: stmt,
-                question: `Terkait isu berikut: "${stmt}", apa sasaran atau tujuan utama yang ingin dicapai dari langkah tersebut?`,
-                options: options,
-                explanation: `Sesuai fakta modul: "${stmt}"`
-            };
-        }
-
-        function createVariant2(num, stmt) {
-            const id = (num - 1) * 3 + 2;
-            const correctText = `Karena ${stmt.toLowerCase()}`;
-            const distractors = [
-                `Sebab adanya instruksi internasional untuk menghentikan seluruh program konvensional di era transformasi digital.`,
-                `Karena ditemukannya fluktuasi biaya operasional yang mengharuskan pembatalan skema distribusi daerah.`,
-                `Guna mengantisipasi penurunan indeks persaingan global akibat regulasi domestik yang berlebihan.`
-            ];
-
-            const options = [
-                { key: 'A', text: distractors[0], correct: false },
-                { key: 'B', text: correctText, correct: true },
-                { key: 'C', text: distractors[1], correct: false },
-                { key: 'D', text: distractors[2], correct: false }
-            ];
-
-            return {
-                id: id,
-                modulNum: num,
-                variant: 2,
-                variantLabel: "Variasi 2 (Sebab & Alasan)",
-                sourceText: stmt,
-                question: `Memperhatikan konteks berikut: "${stmt}", mengapa hal atau kebijakan tersebut menjadi perhatian yang sangat krusial saat ini?`,
-                options: options,
-                explanation: `Sesuai fakta modul: "${stmt}"`
-            };
-        }
-
-        function createVariant3(num, stmt) {
-            const id = (num - 1) * 3 + 3;
-            const correctText = stmt;
-            const tweak1 = stmt.replace("meningkatkan", "membatasi").replace("memperluas", "menghentikan sementara");
-            const tweak2 = stmt.replace("jangka panjang", "jangka pendek secara terdesentralisasi").replace("nasional", "regional kawasan");
-            const tweak3 = stmt.replace("mengurangi ketergantungan", "menghapuskan total seluruh ketergantungan");
-
-            const distractors = [
-                tweak1 !== stmt ? tweak1 : `Kebijakan tersebut telah resmi dibekukan oleh instansi terkait untuk dievaluasi ulang secara terpusat.`,
-                tweak2 !== stmt ? tweak2 : `Pelaksanaan langkah ini difokuskan khusus untuk sektor swasta tanpa melibatkan institusi pemerintah.`,
-                tweak3 !== stmt ? tweak3 : `Program ini hanya dilaksanakan selama fase darurat dan tidak berdampak pada jangka panjang.`
-            ];
-
-            const options = [
-                { key: 'A', text: distractors[0], correct: false },
-                { key: 'B', text: distractors[1], correct: false },
-                { key: 'C', text: distractors[2], correct: false },
-                { key: 'D', text: correctText, correct: true }
-            ];
-
-            return {
-                id: id,
-                modulNum: num,
-                variant: 3,
-                variantLabel: "Variasi 3 (Analisis Kesesuaian Faktual)",
-                sourceText: stmt,
-                question: `Mengenai isu berikut: "${stmt}", manakah dari pilihan di bawah ini yang paling tepat dan 100% sesuai dengan fakta resminya?`,
+                question: `${splitData.sent1} ${splitData.prefix}`,
                 options: options,
                 explanation: `Sesuai fakta modul: "${stmt}"`
             };
@@ -1333,11 +1354,9 @@
         function applyKamusFilters() {
             const query = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
             const selectedModul = document.getElementById('modulFilter')?.value || 'ALL';
-            const selectedVariant = document.getElementById('variantFilter')?.value || 'ALL';
 
             currentKamusQuestions = ALL_QUESTIONS.filter(q => {
                 if (selectedModul !== 'ALL' && q.modulNum !== parseInt(selectedModul)) return false;
-                if (selectedVariant !== 'ALL' && q.variant !== parseInt(selectedVariant)) return false;
                 if (query !== '') {
                     const matchId = q.id.toString() === query;
                     const matchQuestion = q.question.toLowerCase().includes(query);
@@ -1378,15 +1397,14 @@
                 <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 space-y-3">
                     <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
                         <div class="flex items-center space-x-2">
-                            <span class="bg-red-600 text-white font-mono text-[10px] px-2 py-0.5 rounded font-bold">#${q.id}</span>
-                            <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Modul #${q.modulNum}</span>
-                            <span class="text-slate-400">${q.variantLabel}</span>
+                            <span class="bg-red-600 text-white font-mono text-[10px] px-2 py-0.5 rounded font-bold">Soal #${q.id}</span>
+                            <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Modul No. ${q.modulNum}</span>
                         </div>
                     </div>
 
                     ${showSource ? `
                         <div class="text-xs text-amber-300 bg-amber-950/30 p-2.5 rounded-xl border border-amber-900/40 italic">
-                            Fakta PDF Modul: "${q.sourceText}"
+                            Teks Asli Modul PDF: "${q.sourceText}"
                         </div>
                     ` : ''}
 
@@ -1410,13 +1428,12 @@
         }
 
         function initApp() {
-            generate300Questions();
+            generate100Questions();
             initKamusDropdown();
             loadSessionHistory();
 
             document.getElementById('searchInput')?.addEventListener('input', applyKamusFilters);
             document.getElementById('modulFilter')?.addEventListener('change', applyKamusFilters);
-            document.getElementById('variantFilter')?.addEventListener('change', applyKamusFilters);
             document.getElementById('toggleSourcePDF')?.addEventListener('change', renderKamusQuestions);
             document.getElementById('toggleAnswers')?.addEventListener('change', renderKamusQuestions);
 
