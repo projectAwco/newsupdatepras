@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
@@ -755,12 +756,22 @@
             const correctText = splitData.completion;
             const distractors = getDistractorsForModule(num, splitData);
 
-            const options = [
-                { key: 'A', text: correctText, correct: true },
-                { key: 'B', text: distractors[0], correct: false },
-                { key: 'C', text: distractors[1], correct: false },
-                { key: 'D', text: distractors[2], correct: false }
+            let rawOptions = [
+                { text: correctText, correct: true },
+                { text: distractors[0], correct: false },
+                { text: distractors[1], correct: false },
+                { text: distractors[2], correct: false }
             ];
+
+            // Distribusi acak posisi kunci jawaban (A, B, C, D) berdasarkan nomor modul
+            const shift = num % 4;
+            let rotatedOptions = rawOptions.slice(shift).concat(rawOptions.slice(0, shift));
+
+            const optKeys = ['A', 'B', 'C', 'D'];
+            const options = rotatedOptions.map((opt, idx) => ({
+                ...opt,
+                key: optKeys[idx]
+            }));
 
             return {
                 id: num,
@@ -874,6 +885,10 @@
                 poolCopy = poolCopy.sort(() => Math.random() - 0.5);
                 poolCopy.forEach(q => {
                     q.options = q.options.sort(() => Math.random() - 0.5);
+                    const optKeys = ['A', 'B', 'C', 'D'];
+                    q.options.forEach((opt, idx) => {
+                        opt.key = optKeys[idx];
+                    });
                 });
             }
 
@@ -945,16 +960,13 @@
             if (!container) return;
 
             let html = '';
-            const optKeys = ['A', 'B', 'C', 'D'];
 
-            q.options.forEach((opt, idx) => {
-                const displayKey = optKeys[idx];
-
+            q.options.forEach((opt) => {
                 html += `
                 <div onclick="selectSessionOptionHP('${q.id}', '${opt.key}')" 
                     class="p-4 sm:p-5 border border-slate-800 bg-slate-950/60 hover:border-red-500 hover:bg-red-950/20 rounded-2xl text-xs sm:text-sm flex items-start cursor-pointer transition-all duration-150 group shadow-xs">
                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold text-xs mr-3.5 shrink-0 group-hover:border-red-500 group-hover:bg-red-600 group-hover:text-white transition-colors">
-                        ${displayKey}
+                        ${opt.key}
                     </span>
                     <span class="mt-0.5 leading-relaxed text-slate-200 font-medium">${opt.text}</span>
                 </div>
@@ -964,24 +976,11 @@
             container.innerHTML = html;
         }
 
-        function selectSessionOptionHP(qId, key) {
-            userSessionAnswers[qId] = key;
-            sessionIndex++;
-            if (sessionIndex < sessionQuestions.length) {
-                renderSessionQuestionHP();
-            } else {
-                const pb = document.getElementById('sessionProgressBar');
-                if (pb) pb.style.width = `100%`;
-                finishSession();
-            }
-        }
-
         function renderSessionBukuList() {
             const container = document.getElementById('sessionBukuQuestionsList');
             if (!container) return;
 
             let html = '';
-            const optKeys = ['A', 'B', 'C', 'D'];
 
             sessionQuestions.forEach((q, qIdx) => {
                 html += `
@@ -995,10 +994,10 @@
                     </div>
 
                     <div class="space-y-2.5 pt-1">
-                        ${q.options.map((opt, optIdx) => `
+                        ${q.options.map((opt) => `
                             <div class="p-3 sm:p-3.5 border border-slate-800/80 bg-slate-950/60 rounded-xl text-xs sm:text-sm flex items-start text-slate-300">
                                 <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 font-bold text-xs mr-3 shrink-0">
-                                    ${optKeys[optIdx]}
+                                    ${opt.key}
                                 </span>
                                 <span class="mt-0.5 leading-relaxed">${opt.text}</span>
                             </div>
@@ -1444,3 +1443,4 @@
     </script>
 </body>
 </html>
+```
